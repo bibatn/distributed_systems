@@ -1,3 +1,14 @@
+Зависимости:  
+python3 -m venv env  
+pip install pika  
+pip install redis   
+pip install pandas   
+. env/bin/activate  
+  
+Запуск:  
+Запустить сервера redis(желательно скриптом, 2 сервера обязательно должны быть на портах 6379, 6380)  
+python3 server.py
+python3 client.py 2020-01-01T00:40:00 2020-01-01T05:20:00   
 Замечания:   
 - Запускать сервера redis  и реплики скриптом    
 - Данные распределить пополам по временим   
