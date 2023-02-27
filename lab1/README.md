@@ -4,6 +4,9 @@ pip install pika
 pip install redis   
 pip install pandas   
 . env/bin/activate  
+
+Посмотреть запущенные процессы redis:  
+ps aux | grep redis  
   
 Запуск:  
 Запустить сервера redis(желательно скриптом, 2 сервера обязательно должны быть на портах 6379, 6380)  
