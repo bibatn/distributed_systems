@@ -29,12 +29,18 @@ class Client(object):
 
 if __name__ == '__main__':
     while 1:
-        begin = input ("Enter begin: ")
-        print(begin)
-        end = input("Enter end: ")
+        in_ = input ("Enter begin end step: ")
+        pointer = in_.find(' ')
+        begin = in_[0:pointer]
+        pointer1 = in_.find(' ', pointer + 1)
+        end = in_[pointer + 1:pointer1]
+        step = in_[pointer1+1:len(in_)]
+
+        print(begin, end, step)
+
         routing_key = 'rpc_queue'
 
         client_rpc = Client()
-        print('begin: ', begin, 'end: ', end)
+        print('begin: ', begin, 'end: ', end, ' f')
         response = client_rpc.call(begin, end)
         print(response.decode('utf-8'))

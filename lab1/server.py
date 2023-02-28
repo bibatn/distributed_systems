@@ -72,15 +72,21 @@ def callback(ch, method, properties, body):
 
     print('I am here1')
 
-    response1 = r1[0].mget(return_dict[0])
-    response2 = r2[0].mget(return_dict[1])
+    keys1 = return_dict[0]
+    keys1.sort()
+    keys2 = return_dict[1]
+    keys2.sort()
+
+    response1 = r1[0].mget(keys1)
+    response2 = r2[0].mget(keys2)
     response = ''
 
     for idx, x in enumerate(response1 + response2):
         # print(type(x.decode('utf-8')))
         response = response + x.decode('utf-8') + '\n';
 
-    print(response)
+
+    print ('I am here 3')
 
     ch.basic_publish(exchange='', routing_key=properties.reply_to,
                      properties=pika.BasicProperties(correlation_id=properties.correlation_id),
