@@ -30,9 +30,13 @@ def get_keys2(pattern, keys):
 def callback(ch, method, properties, body):
     count = [0, 0]  # number of fails on server [i]
     body = str(body)
+    print(body)
     pointer = body.find('|')
     begin = body[2:pointer]
-    end = body[pointer + 1:len(body)]
+
+    pointer1 = body.find('|', pointer + 1)
+    end = body[pointer + 1:pointer1]
+    step = body[pointer1 + 1:len(body)]
     print(begin, ' ', end)
     pattern = ''
     for idx, x in enumerate(begin):
@@ -74,7 +78,6 @@ def callback(ch, method, properties, body):
 
     keys1 = return_dict[0]
     keys1.sort()
-    print(keys1)
     for key in keys1:
         key_ = key.decode('utf-8')
         if key_ < begin:
@@ -86,6 +89,7 @@ def callback(ch, method, properties, body):
         if key_ > end:
             keys2.remove(key)
 
+
     response1 = r1[0].mget(keys1)
     response2 = r2[0].mget(keys2)
     response = ''
@@ -95,7 +99,7 @@ def callback(ch, method, properties, body):
         response = response + x.decode('utf-8') + '\n';
 
 
-    print ('I am here 3')
+    print ('I am here 3', step)
 
     ch.basic_publish(exchange='', routing_key=properties.reply_to,
                      properties=pika.BasicProperties(correlation_id=properties.correlation_id),

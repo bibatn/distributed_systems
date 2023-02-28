@@ -15,12 +15,12 @@ class Client(object):
         if self.corr_id == props.correlation_id:
             self.response = body
 
-    def call(self, begin, end):
+    def call(self, begin, end, step):
         self.response = None
         self.corr_id = str(uuid.uuid4())
         self.channel.basic_publish(exchange='', routing_key=routing_key,
                                    properties=pika.BasicProperties(reply_to=self.queue, correlation_id=self.corr_id, ),
-                                   body=(begin + '|' + end))
+                                   body=(begin + '|' + end + '|' + step))
         while not self.response:
             self.connection.process_data_events()
 
@@ -41,6 +41,6 @@ if __name__ == '__main__':
         routing_key = 'rpc_queue'
 
         client_rpc = Client()
-        print('begin: ', begin, 'end: ', end, ' f')
-        response = client_rpc.call(begin, end)
+        print('begin: ', begin, 'end: ', end, 'step: ', step)
+        response = client_rpc.call(begin, end, step)
         print(response.decode('utf-8'))
