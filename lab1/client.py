@@ -1,6 +1,6 @@
-import sys
 import pika
 import uuid
+import sys
 
 
 class Client(object):
@@ -27,12 +27,14 @@ class Client(object):
         return self.response
 
 
+if __name__ == '__main__':
+    while 1:
+        begin = input ("Enter begin: ")
+        print(begin)
+        end = input("Enter end: ")
+        routing_key = 'rpc_queue'
 
-begin = sys.argv[1]
-end = sys.argv[2]
-routing_key = 'rpc_queue'
-
-client_rpc = Client()
-print('begin: ', begin, 'end: ', end)
-response = client_rpc.call(begin, end)
-print(response.decode('utf-8'))
+        client_rpc = Client()
+        print('begin: ', begin, 'end: ', end)
+        response = client_rpc.call(begin, end)
+        print(response.decode('utf-8'))
