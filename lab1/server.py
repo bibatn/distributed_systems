@@ -36,7 +36,7 @@ def callback(ch, method, properties, body):
 
     pointer1 = body.find('|', pointer + 1)
     end = body[pointer + 1:pointer1]
-    step = body[pointer1 + 1:len(body)]
+    step = body[pointer1 + 1:len(body) - 1]
     print(begin, ' ', end)
     pattern = ''
     for idx, x in enumerate(begin):
@@ -89,6 +89,16 @@ def callback(ch, method, properties, body):
         if key_ > end:
             keys2.remove(key)
 
+    period = int(float(step)/10)
+    print('period: ', period)
+    l1 = len(keys1)
+    keys1 = keys1[::period]
+
+    if len(keys2) > l1 % period:
+        for x in range(l1 % period):
+            keys2.pop(0)
+
+    keys2 = keys2[::period]
 
     response1 = r1[0].mget(keys1)
     response2 = r2[0].mget(keys2)
@@ -99,7 +109,7 @@ def callback(ch, method, properties, body):
         response = response + x.decode('utf-8') + '\n';
 
 
-    print ('I am here 3', step)
+    print ('I am here 3', period)
 
     ch.basic_publish(exchange='', routing_key=properties.reply_to,
                      properties=pika.BasicProperties(correlation_id=properties.correlation_id),
