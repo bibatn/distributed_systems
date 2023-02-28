@@ -74,8 +74,17 @@ def callback(ch, method, properties, body):
 
     keys1 = return_dict[0]
     keys1.sort()
+    print(keys1)
+    for key in keys1:
+        key_ = key.decode('utf-8')
+        if key_ < begin:
+            keys1.remove(key)
     keys2 = return_dict[1]
     keys2.sort()
+    for key in keys2:
+        key_ = key.decode('utf-8')
+        if key_ > end:
+            keys2.remove(key)
 
     response1 = r1[0].mget(keys1)
     response2 = r2[0].mget(keys2)
