@@ -21,4 +21,4 @@ def initialize_distributed_system(path_to_csv):
     print(values[1])
 
 
-initialize_distributed_system('svtl_meteo_20200101-20210101.csv')
+initialize_distributed_system('svtl_meteo_20120101-20220101.csv')
