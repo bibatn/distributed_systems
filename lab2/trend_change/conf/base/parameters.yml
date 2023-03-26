@@ -1,0 +1,7 @@
+train_fraction: 0.8
+random_state: 3
+target_column: species
+target_column_: Humidity
+number_nodes: 2
+node1: 0
+node2: 1

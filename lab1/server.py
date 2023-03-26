@@ -106,7 +106,7 @@ def callback(ch, method, properties, body):
 
     for idx, x in enumerate(response1 + response2):
         # print(type(x.decode('utf-8')))
-        response = response + x.decode('utf-8') + '\n';
+        response = response + x.decode('utf-8') + '\n'
 
 
     print ('I am here 3', period)
