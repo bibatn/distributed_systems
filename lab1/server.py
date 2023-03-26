@@ -36,6 +36,7 @@ def callback(ch, method, properties, body):
 
     pointer1 = body.find('|', pointer + 1)
     end = body[pointer + 1:pointer1]
+
     step = body[pointer1 + 1:len(body) - 1]
     print(begin, ' ', end)
     pattern = ''
@@ -76,18 +77,28 @@ def callback(ch, method, properties, body):
 
     print('I am here1')
 
-    keys1 = return_dict[0]
-    keys1.sort()
-    for key in keys1:
+    keys1_ = return_dict[0]
+    keys1_.sort()
+    keys1 = []
+    keys2 = []
+    print(len(keys1_))
+    for key in keys1_:
         key_ = key.decode('utf-8')
-        if key_ < begin:
-            keys1.remove(key)
-    keys2 = return_dict[1]
-    keys2.sort()
-    for key in keys2:
+        if key_ < begin or key_ > end:
+            print(key_, begin, end, key_ < begin or key_ > end)
+        else:
+            keys1.append(key)
+    keys2_ = return_dict[1]
+    keys2_.sort()
+    print("длина 2", len(keys2_))
+    for key in keys2_:
         key_ = key.decode('utf-8')
-        if key_ > end:
-            keys2.remove(key)
+        if key_ < begin or key_ > end:
+            print(key_, begin, end, key_ < begin or key_ > end)
+        else:
+            keys2.append(key)
+
+    print(len(keys1))
 
     period = int(float(step)/10)
     print('period: ', period)
