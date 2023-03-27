@@ -8,6 +8,9 @@ from typing import Any, Dict, Tuple
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import os
+
 
 from mdutils.mdutils import MdUtils
 from mdutils import Html
@@ -119,6 +122,7 @@ def compute(data: pd.DataFrame, np_: int, mp_: int) -> Tuple[np.ndarray, np.ndar
     avg_min = float("inf")
     avg_sq_diff_min = float("inf")
     date = np.datetime64
+    ptr = 0
     for i in range(int(len(x)/np_)*mp_, int(len(x)/np_)*(mp_ + 1)):
         if i < 2:  # can't evaluate polynome by 1 point!
             continue
@@ -150,6 +154,41 @@ def compute(data: pd.DataFrame, np_: int, mp_: int) -> Tuple[np.ndarray, np.ndar
             beta_1 = beta_l
             beta_2 = beta_r
             date = x[i].astype('datetime64[m]')
+            ptr = i
+
+    split_x = np.split(x, [ptr])
+    x_l = split_x[0]
+    x_r = split_x[1]
+    p_l = np.poly1d(beta_1)
+    yp_l = p_l(x_l)
+    p_r = np.poly1d(beta_2)
+    yp_r = p_r(x_r)
+    plt.rcParams['font.size'] = 16
+    fig, ax = plt.subplots(figsize=[16, 8])
+
+    lines = []
+    styles = ['-', '--', '-.', ':']
+
+    x = x.astype('datetime64[m]')
+    x_l = x_l.astype('datetime64[m]')
+    x_r = x_r.astype('datetime64[m]')
+    lines += ax.plot(x, y, '-', color='blue')
+
+    lines += ax.plot(x_l, yp_l, '-', color='green')
+
+    lines += ax.plot(x_r, yp_r, '-', color='red')
+
+    ax.scatter([x[ptr]], [(yp_l[-1] + yp_r[0])/2], color="red", s=20)  # plotting single point
+
+    ax.grid('on')
+    ax.set(xlabel='Дата', ylabel='Давление')
+
+    # specify the lines and labels of the first legend
+    ax.legend(lines[:9], ['Выборка',
+                          'Тренд слева',
+                          'Тренд справа'],
+              loc='center right', frameon=True, labelspacing=1, fontsize=16)
+    fig.savefig('data/final_report/' + str(mp_) + '.png', format='png')
 
     return beta_1, beta_2, avg_sq_diff_min, avg_min, date
 
@@ -161,12 +200,18 @@ def chose_and_write(b1: np.ndarray, b2: np.ndarray, b3: np.ndarray, b4: np.ndarr
         md_file.write('Дата изменения тренда: ' + point1.astype(str) + '  \n')
         md_file.write('Среднее отклонение от модели: ' + str(avg1) + '  \n')
         md_file.write('Среднеквадратичное отклонение от модели: ' + str(avg_sq_diff1) + '  \n')
+        md_file.write('## trend change illustration: ')
+        md_file.new_line(md_file.new_reference_image(text='trend change illustration', path=os.getcwd() + '/data/final_report/0.png', reference_tag='im'))
     else:
         md_file.write('Уравнение левой прямой: ' + 'y = ' + str(b3[0]) + 'x + (' + str(b3[1]) + ')  \n')
         md_file.write('Уравнение правой прямой: ' + 'y = ' + str(b4[0]) + 'x + (' + str(b4[1]) + ')  \n')
         md_file.write('Дата изменения тренда: ' + point2.astype(str) + '  \n')
         md_file.write('Среднее отклонение от модели: ' + str(avg2) + '  \n')
         md_file.write('Среднеквадратичное отклонение от модели: ' + str(avg_sq_diff2) + '  \n')
+        md_file.write('## trend change illustration: ')
+        md_file.new_line(
+        md_file.new_reference_image(text='trend change illustration', path=os.getcwd() + '/data/final_report/1.png',
+                                        reference_tag='im'))
     md_file.create_md_file()
 
 
