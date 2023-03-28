@@ -10,97 +10,98 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import qr
 
 
 from mdutils.mdutils import MdUtils
 from mdutils import Html
 
 
-def GramSchmidt(A):
-    '''
-    Gram-Schmidt method of QR decomposition A=QR
-
-    Inputs
-    ======
-    A : float
-        (m,n) matrix
-
-    Returns
-    =======
-    Q : float
-        Orthogonal matrix.
-    R : float
-        Upper triangular matrix.
-
-    '''
-
-    # get the dimensions of A
-    m, n = A.shape
-
-    # U and E have the same shape
-    U = np.zeros(A.shape, dtype='float64')
-    E = np.zeros(A.shape, dtype='float64')
-
-    # calculate the orthogonal vectors (and unit vectors)
-    for i in range(0, n):
-        U[:, i] = A[:, i]
-        for j in range(0, i):
-            U[:, i] -= np.sum(A[:, i] * E[:, j]) * E[:, j]
-        E[:, i] = U[:, i] / np.linalg.norm(U[:, i])
-
-    # E is actually Q!!
-    Q = E
-
-    # calculate R
-    R = np.dot(Q.T, A)
-
-    # make sure it's upper-triangular!
-    R = np.triu(R)
-
-    return Q, R
-
-
-def QRLeastSq(x, y, deg):
-    '''
-    Use QR decomposition to perform least squares regression.
-
-    Inputs
-    ======
-    x : float
-        x-coordinates
-    y : float
-        y-coordinates
-    deg : int
-        Degree of polynomial to fit
-
-    Returns
-    =======
-    beta : float
-        Array of polynomial coefficients in order from highest degree
-        to the lowest (this is for compatibility with numpy.poly1d)
-    '''
-
-    # get the X matrix, with one column for each degree (deg)
-    X = np.zeros((x.size, deg + 1), dtype='float64')
-    X[:, 0] = 1.0
-    for i in range(1, deg + 1):
-        X[:, i] = X[:, i - 1] * x
-
-    # turn y into a matrix
-    Y = np.array([y]).T
-
-    # Get Q and R using the Gram-Schmidt process
-    Q, R = GramSchmidt(X)
-
-    # time to solve Rβ = Q^T Y
-    # where β contains the polynomial coefficients
-    qty = np.dot(Q.T, Y)
-
-    # solve set of equations for β
-    beta = np.linalg.solve(R, qty)
-
-    # return in reverse order like numpy.polyfit does
-    return beta.flatten()[::-1]
+# def GramSchmidt(A):
+#     '''
+#     Gram-Schmidt method of QR decomposition A=QR
+#
+#     Inputs
+#     ======
+#     A : float
+#         (m,n) matrix
+#
+#     Returns
+#     =======
+#     Q : float
+#         Orthogonal matrix.
+#     R : float
+#         Upper triangular matrix.
+#
+#     '''
+#
+#     # get the dimensions of A
+#     m, n = A.shape
+#
+#     # U and E have the same shape
+#     U = np.zeros(A.shape, dtype='float64')
+#     E = np.zeros(A.shape, dtype='float64')
+#
+#     # calculate the orthogonal vectors (and unit vectors)
+#     for i in range(0, n):
+#         U[:, i] = A[:, i]
+#         for j in range(0, i):
+#             U[:, i] -= np.sum(A[:, i] * E[:, j]) * E[:, j]
+#         E[:, i] = U[:, i] / np.linalg.norm(U[:, i])
+#
+#     # E is actually Q!!
+#     Q = E
+#
+#     # calculate R
+#     R = np.dot(Q.T, A)
+#
+#     # make sure it's upper-triangular!
+#     R = np.triu(R)
+#
+#     return Q, R
+#
+#
+# def QRLeastSq(x, y, deg):
+#     '''
+#     Use QR decomposition to perform least squares regression.
+#
+#     Inputs
+#     ======
+#     x : float
+#         x-coordinates
+#     y : float
+#         y-coordinates
+#     deg : int
+#         Degree of polynomial to fit
+#
+#     Returns
+#     =======
+#     beta : float
+#         Array of polynomial coefficients in order from highest degree
+#         to the lowest (this is for compatibility with numpy.poly1d)
+#     '''
+#
+#     # get the X matrix, with one column for each degree (deg)
+#     X = np.zeros((x.size, deg + 1), dtype='float64')
+#     X[:, 0] = 1.0
+#     for i in range(1, deg + 1):
+#         X[:, i] = X[:, i - 1] * x
+#
+#     # turn y into a matrix
+#     Y = np.array([y]).T
+#
+#     # Get Q and R using the Gram-Schmidt process
+#     Q, R = GramSchmidt(X)
+#
+#     # time to solve Rβ = Q^T Y
+#     # where β contains the polynomial coefficients
+#     qty = np.dot(Q.T, Y)
+#
+#     # solve set of equations for β
+#     beta = np.linalg.solve(R, qty)
+#
+#     # return in reverse order like numpy.polyfit does
+#     return beta.flatten()[::-1]
 
 
 def read_data(
@@ -130,14 +131,14 @@ def compute(data: pd.DataFrame, np_: int, mp_: int) -> Tuple[np.ndarray, np.ndar
         split_y = np.split(y, [i])
         x_l = split_x[0]
         y_l = split_y[0]
-        beta_l = QRLeastSq(x_l, y_l, 1)
+        beta_l = qr.QRLeastSq(x_l, y_l, 1)
         p_l = np.poly1d(beta_l)
         yp_l = p_l(x_l)
         diff_l = yp_l - y_l
 
         x_r = split_x[1]
         y_r = split_y[1]
-        beta_r = QRLeastSq(x_r, y_r, 1)
+        beta_r = qr.QRLeastSq(x_r, y_r, 1)
         p_r = np.poly1d(beta_r)
         yp_r = p_r(x_r)
         diff_r = yp_r - y_r
