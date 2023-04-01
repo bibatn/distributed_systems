@@ -1,3 +1,5 @@
+!!! Не установка всех зависимостей ведет к необъяснимым ошибкам!!!   
+
 python3 -m venv env  
 . env/bin/activate  
 pip install kedro   
