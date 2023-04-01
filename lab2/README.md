@@ -3,6 +3,7 @@ python3 -m venv env
 pip install kedro   
 kedro new  
 pip install -r src/requirements.txt   
-
-pip install mdutils
-https://mdutils.readthedocs.io/en/latest/examples/Example_Python.html
+   
+pip install mdutils   
+pip install matplotlib  
+https://mdutils.readthedocs.io/en/latest/examples/Example_Python.html   
